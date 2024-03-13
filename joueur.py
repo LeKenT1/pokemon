@@ -10,46 +10,41 @@ class Joueur:
         self.adversaire = adversaire 
         self.pokemons = []
 
-    # def choisir_pokemon(self, liste_pokemon: List[Pokemon]):
-    #     print(f"{self.nom}, choisissez vos 3 Pokémons:")
-    #     for i, pokemon in enumerate(liste_pokemon, 1):
-    #         print(f"{i}. {pokemon.nom}")
-    #     choix_pokemons = input("Entrez les numéros des Pokémons séparés par des virgules: ")
-    #     choix_indices = [int(x) - 1 for x in choix_pokemons.split(',')]
-    #     for indice in choix_indices:
-    #         if 0 <= indice < len(liste_pokemon):
-    #             self.ajouter_pokemon(liste_pokemon[indice])
-    #         else:
-    #             print("Choix invalide.")
-    
-    def choisir_pokemon(self, liste_pokemon: List[Pokemon], joueur_nom):
-        pokemons_disponibles = liste_pokemon[:]  
-
-        for _ in range(3):  
-            print(f"Pokémons disponibles :")
-            for i, pokemon in enumerate(pokemons_disponibles, 1):
-                print(f"{i}. {pokemon.nom}")
-                    
-            choix_pokemon = int(input(f"{joueur_nom}, entrez le numéro du Pokémon que vous souhaitez choisir : "))
-                
-            if 1 <= choix_pokemon <= len(pokemons_disponibles):
-                pokemon_choisi = pokemons_disponibles.pop(choix_pokemon - 1)  
-                self.ajouter_pokemon(pokemon_choisi)
-                print(f"{joueur_nom} a choisi {pokemon_choisi.nom}.")
+    def choisir_pokemon(self, liste_pokemon: List[Pokemon]):
+        while True:
+            print(f"{self.nom}, choisissez vos 3 Pokémons, vous avez {self.argent} ¤:")
+            choix_pokemons = input("Entrez les numéros des Pokémons séparés par des virgules (ex: 1,2,3): ")
+            choix_indices = [int(x) - 1 for x in choix_pokemons.split(',') if x.isdigit()]
+            if len(choix_indices) == 3:
+                prix_total = sum(liste_pokemon[indice].prix for indice in choix_indices)
+                if prix_total <= self.argent:
+                    break
+                else:
+                    print("Vous n'avez pas assez d'argent pour acheter ces Pokémon.")
             else:
-                print("Choix invalide. Veuillez choisir un numéro valide.")
+                print("Vous devez choisir exactement 3 Pokémon.")
+        for indice in choix_indices:
+            self.ajouter_pokemon(liste_pokemon[indice])
+            self.argent -= liste_pokemon[indice].prix
 
     def ajouter_pokemon(self, pokemon):
         self.pokemons.append(pokemon)
 
     def choisir_attaque(self, pokemon):
-        print(f"{self.nom}, choisissez une attaque pour {pokemon.nom}:")
-        for i, attaque in enumerate(pokemon.attaques, 1):
-            print(f"{i}. {attaque.nom} (Puissance: {attaque.puissance})")
-        choix_attaque = input("Entrez le numéro de l'attaque: ")
-        indice_attaque = int(choix_attaque) - 1
-        attaque = pokemon.attaques[indice_attaque]
-        return attaque
+        while True:
+            print(f"{self.nom}, choisissez une attaque pour {pokemon.nom}:")
+            for i, attaque in enumerate(pokemon.attaques, 1):
+                print(f"{i}. {attaque.nom} (Puissance: {attaque.puissance})")
+            choix_attaque = input("Entrez le numéro de l'attaque (1 ou 2): ")
+            
+            if choix_attaque.isdigit():
+                indice_attaque = int(choix_attaque) - 1
+                if 0 <= indice_attaque < len(pokemon.attaques):
+                    return pokemon.attaques[indice_attaque]
+            
+            print("Choix invalide. Veuillez taper 1 ou 2.")
+
+
 
     def recuperer_pokemon(self, numero):
         if 1 <= numero <= len(self.pokemons):

@@ -1,24 +1,58 @@
 from joueur import Joueur
+from rich.table import Table
+from rich.console import Console
 from liste_pokemon import liste_pokemon
+
+
 
 
 class Jeu:
     def __init__(self):
         self.joueurs = []
+        
+    def afficher_liste_pokemon(self):
+        # Créer une nouvelle table
+        table = Table(title="Liste des Pokémon")
 
+        # Ajouter une colonne vide pour la ligne des PV
+        table.add_column("", justify="center", style="cyan", no_wrap=True)
+
+        # Ajouter une colonne pour chaque Pokémon
+        for pokemon in liste_pokemon:
+            table.add_column(pokemon.nom, justify="center", style="cyan", no_wrap=True)
+            
+        # Ajouter pix
+        prix_row = ["Prix:"]
+        for pokemon in liste_pokemon:
+            prix_row.append(str(pokemon.prix) + " ¤")
+
+        # Ajouter les données pour chaque Pokémon
+        pv_row = ["PV:"]
+        for pokemon in liste_pokemon:
+            pv_row.append(str(pokemon.pv))
+
+        # Ajouter la ligne des PV
+        table.add_row(*prix_row)
+        table.add_row(*pv_row)
+
+        # Afficher la table
+        console = Console()
+        console.print(table)
+        
     def jouer(self):
         print("Bienvenue dans le jeu Pokemon!")
         # Inscription des joueurs
         for i in range(2):
             nom_joueur = input(f"Joueur {i+1}, veuillez entrer votre nom: ")
-            argent_joueur = 1000  # Par exemple, vous pouvez donner 1000 unités d'argent à chaque joueur pour acheter des pokémons
+            argent_joueur = 10
             joueur = Joueur(nom_joueur, argent_joueur)
             self.joueurs.append(joueur)
 
         # Les joueurs choisissent leurs Pokémon tour à tour
         for joueur in self.joueurs:
             print(f"{joueur.nom}, c'est à votre tour de choisir vos Pokémons.")
-            joueur.choisir_pokemon(liste_pokemon, {joueur.nom})
+            self.afficher_liste_pokemon()
+            joueur.choisir_pokemon(liste_pokemon)
 
         print("Début du jeu!")
 
@@ -47,6 +81,9 @@ class Jeu:
                         if not pokemon_joueur1.est_ko():
                             pokemon_joueur1.attaquer(pokemon_joueur2, attaque_joueur1)
 
+                    print(f"{pokemon_joueur1.nom} - PV restants: {round(pokemon_joueur1.pv, 1)}")
+                    print(f"{pokemon_joueur2.nom} - PV restants: {round(pokemon_joueur2.pv, 1)}")
+                    
             # Afficher les résultats du round
             print("Résultats du round:")
             for i in range(3):

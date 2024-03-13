@@ -13,8 +13,37 @@ class Pokemon:
         self.attaques = attaques
 
     def attaquer(self, pokemon_cible, attaque_utilisee):
-        # Logique pour déterminer les dégâts infligés à pokemon_cible avec attaque_utilisee
-        pass
+        # Calculer les dégâts
+        degats = self.calculer_degats(attaque_utilisee, pokemon_cible)
+
+        # Appliquer les dégâts à la cible
+        pokemon_cible.pv -= degats
+
+        # Afficher le résultat de l'attaque
+        print(f"{self.nom} utilise {attaque_utilisee.nom} et inflige {round(degats, 1)} dégâts à {pokemon_cible.nom}!")
+
+    def calculer_degats(self, attaque, pokemon_cible):
+        # Calculer le coefficient multiplicateur (CM)
+        coef_multiplicateur = self.calculer_coef_multiplicateur(attaque)
+
+        # Calculer les dégâts selon la formule donnée
+        degats = ((((self.niveau * 0.4 + 2) * self.attaque * attaque.puissance) / (pokemon_cible.defense * 50)) + 2) * coef_multiplicateur
+
+        # Retourner les dégâts calculés
+        return degats
+
+    def calculer_coef_multiplicateur(self, attaque):
+        # Calculer le coefficient STAB
+        coef_stab = 1.5 if attaque.type_attaque in self.types else 1
+
+        # Calculer le coefficient de précision
+        coef_precision = attaque.precision / 100
+
+        # Calculer le coefficient multiplicateur total
+        coef_multiplicateur = coef_stab * coef_precision
+
+        # Retourner le coefficient multiplicateur total
+        return coef_multiplicateur
 
     def est_ko(self):
         return self.pv <= 0
