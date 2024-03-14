@@ -122,6 +122,7 @@ class Jeu:
             self.jouer()
         else:
             print("Merci d'avoir joué !")
+            return
 
 jeu = Jeu()
 jeu.jouer()
